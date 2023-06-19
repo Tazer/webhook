@@ -22,9 +22,8 @@ func main() {
 	reqLogs := NewRequestLogs()
 
 	r := gin.Default()
-	router := gin.Default()
 	templ := template.Must(template.New("").ParseFS(templates, "templates/*.tmpl"))
-	router.SetHTMLTemplate(templ)
+	r.SetHTMLTemplate(templ)
 	r.GET("/", func(c *gin.Context) {
 
 		id := ulid.Make()
