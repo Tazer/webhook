@@ -2,6 +2,7 @@ package main
 
 import (
 	"embed"
+	"encoding/json"
 	"html/template"
 	"io"
 	"net/http"
@@ -64,7 +65,13 @@ func main() {
 
 		logs := reqLogs.Get(c.Param("id"))
 
-		c.HTML(http.StatusOK, "logs.tmpl", gin.H{"logs": logs})
+		logsJson, err := json.Marshal(logs)
+		if err != nil {
+			c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+			return
+		}
+
+		c.HTML(http.StatusOK, "logs.tmpl", gin.H{"logs": logs, "logs_json": logsJson})
 	})
 	r.Run() // listen and serve on 0.0.0.0:8080 (for windows "localhost:8080")
 }
