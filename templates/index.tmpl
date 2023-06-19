@@ -393,6 +393,12 @@
         <div class="column">
           <a class="url" href="{{.url}}">{{.url}}</a>
         </div>
+        <div class="column">
+        <form method="POST" action="/log/{{.id}}/password">
+            <input type="password" name="password" placeholder="password">
+            <button type="submit">Set password</button>
+        </form>
+        </div>
         <div class="column column--wrap">
           <div class="actions">
             <div aria-label="Copy link" data-balloon-pos="up">

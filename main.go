@@ -11,7 +11,6 @@ import (
 	"sync"
 
 	"github.com/gin-gonic/gin"
-	"github.com/gin-gonic/gin/binding"
 	"github.com/oklog/ulid/v2"
 )
 
@@ -32,20 +31,21 @@ func main() {
 		id := ulid.Make()
 
 		c.HTML(http.StatusOK, "index.tmpl", gin.H{
+			"id":      id.String(),
 			"url":     "/log/" + id.String(),
 			"urllogs": "/log/" + id.String() + "/logs",
 		})
 	})
 
 	r.POST("/log/:id/password", func(c *gin.Context) {
-		setPass := SetPassword{}
-		err := c.MustBindWith(&setPass, binding.JSON)
-		if err != nil {
-			c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
-			return
-		}
+		//setPass := SetPassword{}
+		//err := c.MustBindWith(&setPass, binding.JSON)
+		//if err != nil {
+		//	c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		//	return
+		//}
 
-		err = reqLogs.AddPassword(c.Param("id"), setPass.Password)
+		err := reqLogs.AddPassword(c.Param("id"), c.PostForm("password"))
 		if err != nil {
 			c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 			return
