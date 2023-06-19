@@ -11,6 +11,7 @@ import (
 	"sync"
 
 	"github.com/gin-gonic/gin"
+	"github.com/gin-gonic/gin/binding"
 	"github.com/oklog/ulid/v2"
 )
 
@@ -29,6 +30,15 @@ func main() {
 	r.GET("/", func(c *gin.Context) {
 
 		id := ulid.Make()
+
+		if c.ContentType() == "application/json" {
+			c.JSON(http.StatusOK, gin.H{
+				"id":      id.String(),
+				"url":     "/log/" + id.String(),
+				"urllogs": "/log/" + id.String() + "/logs",
+			})
+			return
+		}
 
 		c.HTML(http.StatusOK, "index.tmpl", gin.H{
 			"id":      id.String(),
@@ -51,9 +61,13 @@ func main() {
 			return
 		}
 
-		c.JSON(http.StatusOK, gin.H{
-			"status": "accepted",
-		})
+		if c.ContentType() == "application/json" {
+			c.JSON(http.StatusOK, gin.H{
+				"status": "accepted",
+			})
+		} else {
+			c.Redirect(http.StatusTemporaryRedirect, "/log/"+c.Param("id")+"/logs")
+		}
 	})
 
 	r.Any("/log/:id", func(c *gin.Context) {
@@ -73,9 +87,15 @@ func main() {
 		reqLog.Method = c.Request.Method
 
 		reqLogs.Add(c.Param("id"), reqLog)
-		c.JSON(http.StatusOK, gin.H{
-			"status": "accepted",
-		})
+		if c.ContentType() == "application/json" {
+			c.JSON(http.StatusOK, gin.H{
+				"status": "accepted",
+			})
+		} else {
+			c.HTML(http.StatusOK, "accepted.tmpl", gin.H{
+				"id": c.Param("id"),
+			})
+		}
 	})
 	r.Any("/log/:id/fail/:status", func(c *gin.Context) {
 
@@ -84,7 +104,23 @@ func main() {
 		})
 	})
 	r.POST("/log/:id/logs", func(c *gin.Context) {
-		if !reqLogs.CheckPassword(c.Param("id"), c.PostForm("password")) {
+
+		pass := ""
+
+		if c.ContentType() == "application/json" {
+			setPass := SetPassword{}
+			err := c.MustBindWith(&setPass, binding.JSON)
+			if err != nil {
+				c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+				return
+			}
+			pass = setPass.Password
+
+		} else {
+			pass = c.PostForm("password")
+		}
+
+		if !reqLogs.CheckPassword(c.Param("id"), pass) {
 			c.JSON(http.StatusUnauthorized, gin.H{"error": "invalid password"})
 			return
 		}
@@ -114,7 +150,12 @@ func renderLogs(c *gin.Context, reqLogs *RequestLogs) {
 		return
 	}
 
-	c.HTML(http.StatusOK, "logs.tmpl", gin.H{"logs": logs, "logs_json": logsJson})
+	if c.ContentType() == "application/json" {
+		c.JSON(http.StatusOK, logs)
+		return
+	}
+
+	c.HTML(http.StatusOK, "logs.tmpl", gin.H{"logs": logs, "logs_json": logsJson, "id": c.Param("id")})
 }
 
 type RequestLogs struct {

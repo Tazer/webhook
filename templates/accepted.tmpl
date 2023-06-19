@@ -1,0 +1,17 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>webhook</title>
+    <meta name="robots" content="noindex,nofollow">
+</head>
+<body>
+    <h1>request accepted</h1>
+            <form method="POST" action="/log/{{.id}}/password">
+                <input type="password" name="password" placeholder="password">
+                <button type="submit">Set password</button>
+            </form>
+    go to <a href="/log/{{ .id }}/logs">logs</a>
+
+</body>
+</html>

@@ -107,6 +107,12 @@
       </div>
     </div>
     {{end}}
+    <div>
+                <form method="POST" action="/log/{{.id}}/password">
+                    <input type="password" name="password" placeholder="password">
+                    <button type="submit">Set password</button>
+                </form>
+                </div>
   </div>
 </body>
 
