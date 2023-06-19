@@ -5,17 +5,110 @@
     <title>webhook</title>
     <meta name="robots" content="noindex,nofollow">
 </head>
+<style>
+    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
+  </style>
+  <style>
+    body,
+    html {
+      padding: 0;
+      margin: 0;
+    }
+
+    body {
+      color: #2c2c2c;
+      background: #efefef;
+      font-family: 'Inter', sans-serif;
+      font-weight: 400;
+      font-size: 14px;
+    }
+
+    .container {
+      width: 90%;
+      max-width: 1400px;
+      margin: 0 auto;
+      
+    }
+    
+
+    .panel {
+      background: #fff;
+      border-radius: 4px;
+      padding: 20px;
+      margin-bottom: 20px;
+    }
+    
+    .code-box {
+      border-radius: 4px;
+      padding: 5px;
+      background: #f9f9f9;
+      border: 1px solid #eee;
+      overflow: auto;
+    }
+
+    ul {
+      list-style-type: none;
+      margin: 0;
+      padding: 0;
+    }
+
+    .get-info {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 20px;
+    }
+
+    .badge {
+      padding: 4px 8px;
+      border: 1px solid;
+      color: #fff;
+      font-size: 14px;
+      font-weight: 700;
+      border-radius: 4px;
+    }
+
+    .GET {
+      background-color: #8BC34A;
+    }
+
+    .POST {
+      background-color: #FF9800;
+    }
+
+    .PUT {
+      background-color: #03A9F4;
+    }
+
+    .DELETE {
+      background-color: #F44336;
+    }
+  </style>
 <body>
-    <h1>logs</h1>
-    {{range  .logs}}
-    <h2>Request</h2>
-    <b>{{.URL}}</b><br/>
-    <b>{{.Method}}</b>
-    <h3>headers<h3>
-    <code>{{ .Headers }}</code>
-    <h3>body<h3>
-        <code>{{ .Body }}</code>
+  <div class="container">
+    <h1>Logs</h1>
+    {{range .logs}}
+    <div class="panel">
+      <div class="get-info">
+        <div class="badge {{.Method}}">{{.Method}}</div>
+        <div>{{.URL}}</b></div>
+      </div>
+      <h3>Headers</h3>
+      <div class="code-box">
+        <ul>
+          {{ range $key, $value := .Headers }}
+            <li><strong>{{ $key }}</strong>: {{ $value }}</li>
+          {{ end }}
+        </ul>
+      </div>
+      <h3>Body</h3>
+      <div class="code-box">
+        {{ .Body }}
+      </div>
+    </div>
     {{end}}
+  </div>
+</body>
 
 </body>
 </html>
