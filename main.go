@@ -1,6 +1,8 @@
 package main
 
 import (
+	"embed"
+	"html/template"
 	"io/ioutil"
 	"net/http"
 	"net/url"
@@ -10,12 +12,19 @@ import (
 	"github.com/oklog/ulid/v2"
 )
 
+var (
+	//go:embed templates/*
+	templates embed.FS
+)
+
 func main() {
 
 	reqLogs := NewRequestLogs()
 
 	r := gin.Default()
-	r.LoadHTMLGlob("templates/*")
+	router := gin.Default()
+	templ := template.Must(template.New("").ParseFS(templates, "templates/*.tmpl"))
+	router.SetHTMLTemplate(templ)
 	r.GET("/", func(c *gin.Context) {
 
 		id := ulid.Make()
