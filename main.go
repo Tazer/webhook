@@ -64,7 +64,7 @@ func main() {
 
 		logs := reqLogs.Get(c.Param("id"))
 
-		c.JSON(http.StatusOK, logs)
+		c.HTML(http.StatusOK, "logs.tmpl", gin.H{"logs": logs})
 	})
 	r.Run() // listen and serve on 0.0.0.0:8080 (for windows "localhost:8080")
 }
