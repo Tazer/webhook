@@ -1,15 +1,439 @@
 <!DOCTYPE html>
 <html lang="en">
+<style>
+    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
+  </style>
+  <style>
+  :root {
+      --balloon-border-radius: 2px;
+      --balloon-color: rgba(16, 16, 16, 0.95);
+      --balloon-text-color: #fff;
+      --balloon-font-size: 12px;
+      --balloon-move: 4px
+    }
+
+    button[aria-label][data-balloon-pos] {
+      overflow: visible
+    }
+
+    [aria-label][data-balloon-pos] {
+      position: relative;
+      cursor: pointer
+    }
+
+    [aria-label][data-balloon-pos]:after {
+      opacity: 0;
+      pointer-events: none;
+      transition: all 0.18s ease-out 0.18s;
+      text-indent: 0;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen, Ubuntu, Cantarell, "Open Sans", "Helvetica Neue", sans-serif;
+      font-weight: normal;
+      font-style: normal;
+      text-shadow: none;
+      font-size: var(--balloon-font-size);
+      background: var(--balloon-color);
+      border-radius: 2px;
+      color: var(--balloon-text-color);
+      border-radius: var(--balloon-border-radius);
+      content: attr(aria-label);
+      padding: .5em 1em;
+      position: absolute;
+      white-space: nowrap;
+      z-index: 10
+    }
+
+    [aria-label][data-balloon-pos]:before {
+      width: 0;
+      height: 0;
+      border: 5px solid transparent;
+      border-top-color: var(--balloon-color);
+      opacity: 0;
+      pointer-events: none;
+      transition: all 0.18s ease-out 0.18s;
+      content: "";
+      position: absolute;
+      z-index: 10
+    }
+
+    [aria-label][data-balloon-pos]:hover:before,
+    [aria-label][data-balloon-pos]:hover:after,
+    [aria-label][data-balloon-pos][data-balloon-visible]:before,
+    [aria-label][data-balloon-pos][data-balloon-visible]:after,
+    [aria-label][data-balloon-pos]:not([data-balloon-nofocus]):focus:before,
+    [aria-label][data-balloon-pos]:not([data-balloon-nofocus]):focus:after {
+      opacity: 1;
+      pointer-events: none
+    }
+
+    [aria-label][data-balloon-pos].font-awesome:after {
+      font-family: FontAwesome, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif
+    }
+
+    [aria-label][data-balloon-pos][data-balloon-break]:after {
+      white-space: pre
+    }
+
+    [aria-label][data-balloon-pos][data-balloon-break][data-balloon-length]:after {
+      white-space: pre-line;
+      word-break: break-word
+    }
+
+    [aria-label][data-balloon-pos][data-balloon-blunt]:before,
+    [aria-label][data-balloon-pos][data-balloon-blunt]:after {
+      transition: none
+    }
+
+    [aria-label][data-balloon-pos][data-balloon-pos="up"]:hover:after,
+    [aria-label][data-balloon-pos][data-balloon-pos="up"][data-balloon-visible]:after,
+    [aria-label][data-balloon-pos][data-balloon-pos="down"]:hover:after,
+    [aria-label][data-balloon-pos][data-balloon-pos="down"][data-balloon-visible]:after {
+      transform: translate(-50%, 0)
+    }
+
+    [aria-label][data-balloon-pos][data-balloon-pos="up"]:hover:before,
+    [aria-label][data-balloon-pos][data-balloon-pos="up"][data-balloon-visible]:before,
+    [aria-label][data-balloon-pos][data-balloon-pos="down"]:hover:before,
+    [aria-label][data-balloon-pos][data-balloon-pos="down"][data-balloon-visible]:before {
+      transform: translate(-50%, 0)
+    }
+
+    [aria-label][data-balloon-pos][data-balloon-pos*="-left"]:after {
+      left: 0
+    }
+
+    [aria-label][data-balloon-pos][data-balloon-pos*="-left"]:before {
+      left: 5px
+    }
+
+    [aria-label][data-balloon-pos][data-balloon-pos*="-right"]:after {
+      right: 0
+    }
+
+    [aria-label][data-balloon-pos][data-balloon-pos*="-right"]:before {
+      right: 5px
+    }
+
+    [aria-label][data-balloon-pos][data-balloon-po*="-left"]:hover:after,
+    [aria-label][data-balloon-pos][data-balloon-po*="-left"][data-balloon-visible]:after,
+    [aria-label][data-balloon-pos][data-balloon-pos*="-right"]:hover:after,
+    [aria-label][data-balloon-pos][data-balloon-pos*="-right"][data-balloon-visible]:after {
+      transform: translate(0, 0)
+    }
+
+    [aria-label][data-balloon-pos][data-balloon-po*="-left"]:hover:before,
+    [aria-label][data-balloon-pos][data-balloon-po*="-left"][data-balloon-visible]:before,
+    [aria-label][data-balloon-pos][data-balloon-pos*="-right"]:hover:before,
+    [aria-label][data-balloon-pos][data-balloon-pos*="-right"][data-balloon-visible]:before {
+      transform: translate(0, 0)
+    }
+
+    [aria-label][data-balloon-pos][data-balloon-pos^="up"]:before,
+    [aria-label][data-balloon-pos][data-balloon-pos^="up"]:after {
+      bottom: 100%;
+      transform-origin: top;
+      transform: translate(0, var(--balloon-move))
+    }
+
+    [aria-label][data-balloon-pos][data-balloon-pos^="up"]:after {
+      margin-bottom: 10px
+    }
+
+    [aria-label][data-balloon-pos][data-balloon-pos="up"]:before,
+    [aria-label][data-balloon-pos][data-balloon-pos="up"]:after {
+      left: 50%;
+      transform: translate(-50%, var(--balloon-move))
+    }
+
+    [aria-label][data-balloon-pos][data-balloon-pos^="down"]:before,
+    [aria-label][data-balloon-pos][data-balloon-pos^="down"]:after {
+      top: 100%;
+      transform: translate(0, calc(var(--balloon-move) * -1))
+    }
+
+    [aria-label][data-balloon-pos][data-balloon-pos^="down"]:after {
+      margin-top: 10px
+    }
+
+    [aria-label][data-balloon-pos][data-balloon-pos^="down"]:before {
+      width: 0;
+      height: 0;
+      border: 5px solid transparent;
+      border-bottom-color: var(--balloon-color)
+    }
+
+    [aria-label][data-balloon-pos][data-balloon-pos="down"]:after,
+    [aria-label][data-balloon-pos][data-balloon-pos="down"]:before {
+      left: 50%;
+      transform: translate(-50%, calc(var(--balloon-move) * -1))
+    }
+
+    [aria-label][data-balloon-pos][data-balloon-pos="left"]:hover:after,
+    [aria-label][data-balloon-pos][data-balloon-pos="left"][data-balloon-visible]:after,
+    [aria-label][data-balloon-pos][data-balloon-pos="right"]:hover:after,
+    [aria-label][data-balloon-pos][data-balloon-pos="right"][data-balloon-visible]:after {
+      transform: translate(0, -50%)
+    }
+
+    [aria-label][data-balloon-pos][data-balloon-pos="left"]:hover:before,
+    [aria-label][data-balloon-pos][data-balloon-pos="left"][data-balloon-visible]:before,
+    [aria-label][data-balloon-pos][data-balloon-pos="right"]:hover:before,
+    [aria-label][data-balloon-pos][data-balloon-pos="right"][data-balloon-visible]:before {
+      transform: translate(0, -50%)
+    }
+
+    [aria-label][data-balloon-pos][data-balloon-pos="left"]:after,
+    [aria-label][data-balloon-pos][data-balloon-pos="left"]:before {
+      right: 100%;
+      top: 50%;
+      transform: translate(var(--balloon-move), -50%)
+    }
+
+    [aria-label][data-balloon-pos][data-balloon-pos="left"]:after {
+      margin-right: 10px
+    }
+
+    [aria-label][data-balloon-pos][data-balloon-pos="left"]:before {
+      width: 0;
+      height: 0;
+      border: 5px solid transparent;
+      border-left-color: var(--balloon-color)
+    }
+
+    [aria-label][data-balloon-pos][data-balloon-pos="right"]:after,
+    [aria-label][data-balloon-pos][data-balloon-pos="right"]:before {
+      left: 100%;
+      top: 50%;
+      transform: translate(calc(var(--balloon-move) * -1), -50%)
+    }
+
+    [aria-label][data-balloon-pos][data-balloon-pos="right"]:after {
+      margin-left: 10px
+    }
+
+    [aria-label][data-balloon-pos][data-balloon-pos="right"]:before {
+      width: 0;
+      height: 0;
+      border: 5px solid transparent;
+      border-right-color: var(--balloon-color)
+    }
+
+    [aria-label][data-balloon-pos][data-balloon-length]:after {
+      white-space: normal
+    }
+
+    [aria-label][data-balloon-pos][data-balloon-length="small"]:after {
+      width: 80px
+    }
+
+    [aria-label][data-balloon-pos][data-balloon-length="medium"]:after {
+      width: 150px
+    }
+
+    [aria-label][data-balloon-pos][data-balloon-length="large"]:after {
+      width: 260px
+    }
+
+    [aria-label][data-balloon-pos][data-balloon-length="xlarge"]:after {
+      width: 380px
+    }
+
+    @media screen and (max-width: 768px) {
+      [aria-label][data-balloon-pos][data-balloon-length="xlarge"]:after {
+        width: 90vw
+      }
+    }
+
+    [aria-label][data-balloon-pos][data-balloon-length="fit"]:after {
+      width: 100%
+    }
+  </style>
+  <style>
+    body,
+    html {
+      padding: 0;
+      margin: 0;
+    }
+
+    body {
+      color: #2c2c2c;
+      background: #efefef;
+      font-family: 'Inter', sans-serif;
+      font-weight: 400;
+      font-size: 14px;
+    }
+
+    .container {
+      width: 90%;
+      max-width: 1400px;
+      margin: 0 auto;
+      
+    }
+    
+
+    .panel {
+      background: #fff;
+      border-radius: 4px;
+      padding: 20px;
+      margin-bottom: 20px;
+    }
+
+    .code-box {
+      border-radius: 4px;
+      padding: 10px;
+      background: #f9f9f9;
+      border: 1px solid #eee;
+      overflow: auto;
+    }
+
+    ul {
+      list-style-type: none;
+      margin: 0;
+      padding: 0;
+    }
+
+    .get-info {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 20px;
+    }
+
+    .badge {
+      padding: 4px 8px;
+      border: 1px solid;
+      color: #fff;
+      font-size: 14px;
+      font-weight: 700;
+      border-radius: 4px;
+    }
+
+    .GET {
+      background-color: #8BC34A;
+    }
+
+    .POST {
+      background-color: #FF9800;
+    }
+
+    .PUT {
+      background-color: #03A9F4;
+    }
+
+    .DELETE {
+      background-color: #F44336;
+    }
+
+
+    .button {
+      height: 34px;
+      width: 34px;
+      border: none;
+      border-radius: 50%;
+      color: #2c2c2c;
+      cursor: pointer;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      background: transparent;
+    }
+
+    .button:hover {
+      background: #efefef;
+    }
+
+    .button svg {
+      display: block;
+      height: 20px;
+    }
+
+    .row {
+      display: flex;
+    }
+
+    .row--center-v {
+      align-items: center;
+    }
+
+    .column {
+      flex: 1;
+    }
+
+    .column--wrap {
+      flex: none;
+    }
+
+    .actions {
+      display: flex;
+      gap: 4px;
+    }
+
+    a {
+      color: #2c2c2c;
+    }
+
+    a:not(.button):hover {
+      color: #555;
+    }
+
+    .url {
+      font-size: 16px;
+    }
+  </style>
 <head>
     <meta charset="UTF-8">
     <title>webhook</title>
     <meta name="robots" content="noindex,nofollow">
 </head>
+
 <body>
-    <h1>webhook</h1>
-    <p>url: <a href="{{ .url }}">{{ .url }}</a></p>
-    <p>logs: <a href="{{ .urllogs }}">{{ .urllogs }}</a></p>
+  <div class="container">
+    <h1>Webhook</h1>
+    <div class="panel">
+      <div class="row row--center-v">
+        <div class="column">
+          <a class="url" href="{{.url}}">{{.url}}</a>
+        </div>
+        <div class="column column--wrap">
+          <div class="actions">
+            <div aria-label="Copy link" data-balloon-pos="up">
+              <button class="button" data-url="{{.url}}">
+                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"
+                  stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+                  class="feather feather-clipboard">
+                  <path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"></path>
+                  <rect x="8" y="2" width="8" height="4" rx="1" ry="1"></rect>
+                </svg>
+              </button>
+            </div>
+            <div aria-label="Logs" data-balloon-pos="up">
+              <a class="button" href="{{.urllogs}}">
+                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"
+                  stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+                  class="feather feather-database">
+                  <ellipse cx="12" cy="5" rx="9" ry="3"></ellipse>
+                  <path d="M21 12c0 1.66-4 3-9 3s-9-1.34-9-3"></path>
+                  <path d="M3 5v14c0 1.66 4 3 9 3s9-1.34 9-3V5"></path>
+                </svg>
+              </a>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
 
-
+  <script>
+    (function () {
+      Array.from(document.querySelectorAll('button[data-url]')).forEach((e) => {
+        e.addEventListener('click', () => {
+          navigator.clipboard.writeText(`${window.location.origin}${e.dataset.url}`).then(function () {
+            console.log('Copied!');
+          }, function () {
+            console.log('Copy error')
+          });
+        });
+      });
+    })();
+  </script>
 </body>
 </html>
