@@ -6,8 +6,15 @@
 </head>
 <body>
     <h1>logs</h1>
-    <code>{{ .logs }}</code>
-
+    {{range  .logs}}
+    <h2>Request</h2>
+    <b>{{.URL}}</b><br/>
+    <b>{{.Method}}</b>
+    <h3>headers<h3>
+    <code>{{ .Headers }}</code>
+    <h3>body<h3>
+        <code>{{ .Body }}</code>
+    {{end}}
 
 </body>
 </html>

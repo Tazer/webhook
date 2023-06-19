@@ -3,7 +3,7 @@ package main
 import (
 	"embed"
 	"html/template"
-	"io/ioutil"
+	"io"
 	"net/http"
 	"net/url"
 	"sync"
@@ -38,7 +38,7 @@ func main() {
 		reqLog := RequestLog{}
 
 		defer c.Request.Body.Close()
-		respbody, err := ioutil.ReadAll(c.Request.Body)
+		respbody, err := io.ReadAll(c.Request.Body)
 		if err != nil {
 			c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 			return
